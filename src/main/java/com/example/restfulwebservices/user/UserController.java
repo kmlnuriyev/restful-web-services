@@ -1,10 +1,8 @@
 package com.example.restfulwebservices.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.EntityModel;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
-
-import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -12,6 +10,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
 
 @RestController
 public class UserController {
@@ -25,15 +25,15 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}")
-    public EntityModel<User> getUser(@PathVariable int id) {
+    public Resource<User> getUser(@PathVariable int id) {
         User user = userDaoService.findUser(id);
 
         if (user == null) {
             throw new UserNotFoundException("User not found - ID = " + id);
         }
 
-        EntityModel<User> model = new EntityModel<>(user);
-        WebMvcLinkBuilder linkTo = linkTo(methodOn(this.getClass()).getAllUsers());
+        Resource<User> model = new Resource<>(user);
+        ControllerLinkBuilder linkTo = linkTo(methodOn(this.getClass()).getAllUsers());
 
         model.add(linkTo.withRel("all-users"));
 
